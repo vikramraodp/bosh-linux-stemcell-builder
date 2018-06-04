@@ -22,7 +22,7 @@ then
   # to conflicts.
   # This patch should no longer be required once the openSUSE stemcell ships a newer kernel
   # (at least 4.8.x).
-  patch $chroot/usr/src/ixgbevf-4.3.4/src/kcompat.h $assets_dir/opensuse_kcompat.h.patch
+  patch $chroot/usr/src/ixgbevf-4.3.5/src/kcompat.h $assets_dir/opensuse_kcompat.h.patch
 fi
 
 pkg_mgr install dkms

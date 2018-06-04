@@ -1,5 +1,5 @@
---- /usr/src/ixgbevf-4.3.4/src/kcompat.h.orig	2018-03-14 12:39:07.125424467 +0000
-+++ /usr/src/ixgbevf-4.3.4/src/kcompat.h	2018-03-14 12:54:41.989425650 +0000
+--- /usr/src/ixgbevf-4.3.5/src/kcompat.h.orig  2018-03-14 12:39:07.125424467 +0000
++++ /usr/src/ixgbevf-4.3.5/src/kcompat.h       2018-06-04 12:54:41.989425650 +0000
 @@ -22,6 +22,10 @@
  
  *******************************************************************************/
@@ -11,7 +11,7 @@
  #ifndef _KCOMPAT_H_
  #define _KCOMPAT_H_
  
-@@ -5410,6 +5414,7 @@
+@@ -5420,6 +5424,7 @@
  }
  #endif
  
@@ -19,7 +19,7 @@
  #if !(UBUNTU_VERSION_CODE && \
  		UBUNTU_VERSION_CODE >= UBUNTU_VERSION(4,4,0,21)) && \
  	!(RHEL_RELEASE_CODE && \
-@@ -5429,6 +5434,7 @@
+@@ -5439,6 +5444,7 @@
  	* sum = csum_fold(csum_add(diff, ~csum_unfold(*sum)));
  }
  #endif
@@ -27,7 +27,7 @@
  
  #if !(RHEL_RELEASE_CODE && (RHEL_RELEASE_CODE > RHEL_RELEASE_VERSION(7,2)))
  static inline void page_ref_inc(struct page *page)
-@@ -5471,6 +5477,7 @@
+@@ -5489,6 +5495,7 @@
  };
  #endif
  
@@ -35,7 +35,7 @@
  #if !(SLE_VERSION_CODE && (SLE_VERSION_CODE >= SLE_VERSION(12,3,0))) &&\
  	!(RHEL_RELEASE_CODE && RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(7,4))
  static inline int
-@@ -5509,6 +5516,7 @@
+@@ -5527,6 +5534,7 @@
  			    pci_select_bars(pdev, IORESOURCE_MEM));
  }
  #endif /* !SLE_VERSION(12,3,0) */
@@ -43,7 +43,7 @@
  #else
  #define HAVE_UDP_ENC_RX_OFFLOAD
  #endif /* 4.8.0 */
-@@ -5556,6 +5564,7 @@
+@@ -5581,6 +5589,7 @@
  }
  #endif
  
@@ -51,11 +51,11 @@
  static inline void __page_frag_cache_drain(struct page *page,
  					   unsigned int count)
  {
-@@ -5571,6 +5580,7 @@
+@@ -5596,6 +5605,7 @@
  #endif
  	__free_pages(page, compound_order(page));
  }
 +#endif /* !OPENSUSE_423 */
- #endif /* !SLE_VERSION(12,3,0) */
- #ifndef ETH_MIN_MTU
- #define ETH_MIN_MTU 68
+ #endif /* !SLE_VERSION(12,3,0) && !RHEL_VERSION(7,5) */
+ #ifndef page_frag_free
+ #define page_frag_free __free_page_frag
