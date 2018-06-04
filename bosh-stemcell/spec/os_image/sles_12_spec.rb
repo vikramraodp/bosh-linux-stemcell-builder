@@ -30,7 +30,7 @@ describe 'SLES OS image', os_image: true do
     end
   end
 
-  context 'official Centos gpg key is installed (stig: V-38476)' do
+  context 'official SuSE gpg key is installed (stig: V-38476)' do
     describe command('rpm -qa gpg-pubkey* 2>/dev/null | xargs rpm -qi 2>/dev/null') do
       its(:stdout) { should include('SuSE Package Signing Key') }
     end
@@ -148,4 +148,12 @@ describe 'SLES OS image', os_image: true do
     end
   end
 
+
+  context 'enabled services' do
+    describe command('systemctl is-enabled chronyd.service') do
+      it 'keeps the system clock up to date (stig: V-38620 V-38621)' do
+        expect(subject.stdout).to include 'enabled'
+      end
+    end
+  end
 end

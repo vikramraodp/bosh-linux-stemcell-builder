@@ -14,12 +14,12 @@ if [ "$(get_os_type)" == "centos" ]; then
 elif [ "$(get_os_type)" == "ubuntu" ]; then
   echo "7e52df7373b42a36b2bdde9bc88315e828cdc61e  $chroot/etc/logrotate.conf" | sha1sum -c
   cp $assets_dir/ubuntu-logrotate.conf $chroot/etc/logrotate.conf
-elif [ "$(get_os_type)" == "opensuse" ]; then
+elif [ "$(get_os_type)" == "opensuse" ] || [ "$(get_os_type)" == "sles" ]; then
   echo "776b88d6405b814a2bb58ac50e5a80040bfdbde1  $chroot/etc/logrotate.conf" | sha1sum -c
   cp $assets_dir/opensuse-logrotate.conf $chroot/etc/logrotate.conf
 fi
 
-if [ "$(get_os_type)" == "opensuse" ]; then
+if [ "$(get_os_type)" == "opensuse" ] || [ "$(get_os_type)" == "sles" ]; then
   sed 's/OnCalendar=.*/OnCalendar=*:0\/15/; /^Accuracy.*/d' \
     $chroot/usr/lib/systemd/system/logrotate.timer > $chroot/etc/systemd/system/logrotate.timer
   run_in_chroot $chroot "systemctl reenable logrotate.timer"
