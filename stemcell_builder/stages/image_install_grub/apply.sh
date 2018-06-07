@@ -82,7 +82,7 @@ if ! is_ppc64le; then
       run_in_chroot ${image_mount_point} "sed -i 's/CLASS=\\\"--class gnu-linux --class gnu --class os\\\"/CLASS=\\\"--class gnu-linux --class gnu --class os --unrestricted\\\"/' /etc/grub.d/10_linux"
 
       cat >${image_mount_point}/etc/default/grub <<EOF
-GRUB_CMDLINE_LINUX="vconsole.keymap=us net.ifnames=0 biosdevname=0 crashkernel=auto selinux=0 plymouth.enable=0 console=ttyS0,115200n8 earlyprintk=ttyS0 rootdelay=300 audit=1 ipv6.disable=1 cgroup_enable=memory swapaccount=1"
+GRUB_CMDLINE_LINUX="vconsole.keymap=us net.ifnames=0 disk=/dev/xvda multipath=off memhp_default_state=offline nvme_core.io_timeout=254 nvme_core.admin_timeout=254 8250.nr_uarts=4 dis_ucode_ldr biosdevname=0 crashkernel=auto selinux=0 plymouth.enable=0 console=ttyS0,115200n8 earlyprintk=ttyS0 rootdelay=300 audit=1 ipv6.disable=1 cgroup_enable=memory swapaccount=1"
 EOF
     else
       cat >${image_mount_point}/etc/default/grub <<EOF
