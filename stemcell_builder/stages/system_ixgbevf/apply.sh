@@ -6,35 +6,31 @@ base_dir=$(readlink -nf $(dirname $0)/../..)
 source $base_dir/lib/prelude_apply.bash
 source $base_dir/etc/settings.bash
 
-# mkdir $chroot/usr/src/ixgbevf-4.3.5
+mkdir $chroot/usr/src/ixgbevf-4.3.5
 
-# tar -xzf $assets_dir/ixgbevf-4.3.5.tar.gz \
-#   -C $chroot/usr/src/ixgbevf-4.3.5 \
-#   --strip-components=1
+tar -xzf $assets_dir/ixgbevf-4.3.5.tar.gz \
+  -C $chroot/usr/src/ixgbevf-4.3.5 \
+  --strip-components=1
 
-# cp $assets_dir/usr/src/ixgbevf-4.3.5/dkms.conf $chroot/usr/src/ixgbevf-4.3.5/dkms.conf
+cp $assets_dir/usr/src/ixgbevf-4.3.5/dkms.conf $chroot/usr/src/ixgbevf-4.3.5/dkms.conf
 
-# if [ -f ${chroot}/etc/SuSE-release ] # openSUSE
-# then
-#   # openSUSE 42.3 kernels (4.4.x) include patches backported from newer versions. Some of
-#   # these patches are also part of the ixgbevf sources and applied depending on the kernel
-#   # version. These conditions do not work in this case because of the backports which leads
-#   # to conflicts.
-#   # This patch should no longer be required once the openSUSE stemcell ships a newer kernel
-#   # (at least 4.8.x).
-#   patch $chroot/usr/src/ixgbevf-4.3.5/src/kcompat.h $assets_dir/opensuse_kcompat.h.patch
-# fi
+if [ -f ${chroot}/etc/SuSE-release ] # openSUSE
+then
+  # openSUSE 42.3 kernels (4.4.x) include patches backported from newer versions. Some of
+  # these patches are also part of the ixgbevf sources and applied depending on the kernel
+  # version. These conditions do not work in this case because of the backports which leads
+  # to conflicts.
+  # This patch should no longer be required once the openSUSE stemcell ships a newer kernel
+  # (at least 4.8.x).
+  patch $chroot/usr/src/ixgbevf-4.3.5/src/kcompat.h $assets_dir/opensuse_kcompat.h.patch
+fi
 
-# pkg_mgr install dkms
+pkg_mgr install dkms
 
 kernelver=$( ls -rt $chroot/lib/modules | tail -1 )
-# run_in_chroot $chroot "dkms -k ${kernelver} add -m ixgbevf -v 4.3.5"
-# run_in_chroot $chroot "dkms -k ${kernelver} build -m ixgbevf -v 4.3.5"
-# run_in_chroot $chroot "dkms -k ${kernelver} install -m ixgbevf -v 4.3.5"
-
-cat > ${chroot}/etc/dracut.conf.d/xen.conf <<EOF
-add_drivers+="ata_piix ata_generic xen_vnif xen_vbd xen_platform_pci virtio_blk virtio_scsi virtio_net virtio_pci virtio_ring virtio"
-EOF
+run_in_chroot $chroot "dkms -k ${kernelver} add -m ixgbevf -v 4.3.5"
+run_in_chroot $chroot "dkms -k ${kernelver} build -m ixgbevf -v 4.3.5"
+run_in_chroot $chroot "dkms -k ${kernelver} install -m ixgbevf -v 4.3.5"
 
 
 if [ -f ${chroot}/etc/debian_version ] # Ubuntu
