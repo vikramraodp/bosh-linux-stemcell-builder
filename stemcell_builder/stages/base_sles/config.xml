@@ -115,5 +115,7 @@
         <package name="libnfs8"/>
         <package name="gettext-tools"/>
         <package name="sysstat"/>
+        <package name="openldap2-client"/>
+        <package name="uuidd"/>
     </packages>
 </image>
