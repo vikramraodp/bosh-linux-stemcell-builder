@@ -53,9 +53,9 @@ shared_examples_for 'a SLES stemcell' do
     end
   end
 
-  context 'installed by bosh_harden' do
+  context 'modified by base_file_permissions' do
     describe 'disallow unsafe setuid binaries' do
-      subject { command('find / -xdev -perm /6000 -a -type f').stdout.split }
+      subject { command('find / -xdev -perm /ug=s -type f').stdout.split }
 
       it { should match_array(%w(/usr/bin/su /usr/bin/sudo)) }
     end
@@ -80,6 +80,7 @@ shared_examples_for 'a SLES stemcell' do
     exclude_on_vsphere: true,
     exclude_on_warden: true,
     exclude_on_azure: true,
+    exclude_on_google: true,
   } do
     describe file('/var/vcap/bosh/agent.json') do
       it { should be_valid_json_file }
@@ -107,6 +108,7 @@ shared_examples_for 'a SLES stemcell' do
     exclude_on_openstack: true,
     exclude_on_warden: true,
     exclude_on_azure: true,
+    exclude_on_google: true,
    } do
     describe file('/var/vcap/bosh/agent.json') do
       it { should be_valid_json_file }
@@ -120,6 +122,7 @@ shared_examples_for 'a SLES stemcell' do
     exclude_on_vsphere: true,
     exclude_on_warden: true,
     exclude_on_openstack: true,
+    exclude_on_google: true,
   } do
     describe file('/var/vcap/bosh/agent.json') do
       it { should be_valid_json_file }
@@ -129,6 +132,52 @@ shared_examples_for 'a SLES stemcell' do
       its(:content) { should match('"SettingsPath": "/var/lib/waagent/CustomData"') }
       its(:content) { should match('"UseServerName": true') }
       its(:content) { should match('"UseRegistry": true') }
+    end
+  end
+
+  context 'installed by bosh_softlayer_agent_settings', {
+      exclude_on_aws: true,
+      exclude_on_google: true,
+      exclude_on_vcloud: true,
+      exclude_on_vsphere: true,
+      exclude_on_warden: true,
+      exclude_on_azure: true,
+      exclude_on_openstack: true,
+  } do
+    describe file('/var/vcap/bosh/agent.json') do
+      it { should be_valid_json_file }
+      its(:content) { should match('"Type": "File"') }
+      its(:content) { should match('"SettingsPath": "/var/vcap/bosh/user_data.json"') }
+      its(:content) { should match('"UseRegistry": true') }
+    end
+  end
+
+  context 'installed by bosh_openstack_agent_settings', {
+    exclude_on_aws: true,
+    exclude_on_google: true,
+    exclude_on_vcloud: true,
+    exclude_on_vsphere: true,
+    exclude_on_warden: true,
+    exclude_on_azure: true,
+    exclude_on_softlayer: true,
+  } do
+    describe file('/var/vcap/bosh/agent.json') do
+      it { should be_valid_json_file }
+      its(:content) { should match('"CreatePartitionIfNoEphemeralDisk": true') }
+      its(:content) { should match('"Type": "ConfigDrive"') }
+      its(:content) { should match('"Type": "HTTP"') }
+    end
+  end
+
+  context 'systemd services' do
+    describe 'logrotate' do
+      describe 'should rotate every 15 minutes' do
+        describe file('/etc/systemd/system/logrotate.timer') do
+          it 'lists the schedule precisely' do
+            expect(subject.content).to match(/^OnCalendar=\*:0\/15$/)
+          end
+        end
+      end
     end
   end
 end
