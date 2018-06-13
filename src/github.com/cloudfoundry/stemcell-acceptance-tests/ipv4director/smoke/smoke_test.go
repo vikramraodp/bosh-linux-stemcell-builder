@@ -21,7 +21,7 @@ var _ = Describe("Stemcell", func() {
 		It("should rotate the wtmp/btmp logs", func() {
 			sedCommand := ""
 			switch os.Getenv("BOSH_os_name") {
-			case "opensuse-leap":
+			case "opensuse-leap", "sles-12":
 				sedCommand = `sudo sed -i "s/0\/15/0\/1/" /etc/systemd/system/logrotate.timer && sudo systemctl reenable logrotate.timer`
 			default:
 				sedCommand = `sudo sed -i "s/0,15,30,45/\\*/" /etc/cron.d/logrotate`
@@ -52,7 +52,7 @@ var _ = Describe("Stemcell", func() {
 		It("should rotate the logs", func() {
 			sedCommand := ""
 			switch os.Getenv("BOSH_os_name") {
-			case "opensuse-leap":
+			case "opensuse-leap", "sles-12":
 				sedCommand = `sudo sed -i "s/0\/15/0\/1/" /etc/systemd/system/logrotate.timer && sudo systemctl reenable logrotate.timer`
 			default:
 				sedCommand = `sudo sed -i "s/0,15,30,45/\\*/" /etc/cron.d/logrotate`
@@ -111,7 +111,7 @@ var _ = Describe("Stemcell", func() {
 		saCommand := ""
 		sarCommand := ""
 		switch os.Getenv("BOSH_os_name") {
-		case "opensuse-leap":
+		case "opensuse-leap", "sles-12":
 			saCommand = "/usr/lib64/sa/sa1"
 			sarCommand = "sudo sar -f /var/log/sysstat"
 		default:
