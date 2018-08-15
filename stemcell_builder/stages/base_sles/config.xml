@@ -117,5 +117,10 @@
         <package name="sysstat11.0"/>
         <package name="openldap2-client"/>
         <package name="uuidd"/>
+        <package name="automake"/>
+        <package name="libtool"/>
+        <package name="gdbm-devel"/>
+        <package name="libffi-devel"/>
+        <package name="sqlite3-devel"/>
     </packages>
 </image>
