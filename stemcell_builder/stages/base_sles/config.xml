@@ -122,5 +122,6 @@
         <package name="gdbm-devel"/>
         <package name="libffi-devel"/>
         <package name="sqlite3-devel"/>
+        <package name="jq"/>
     </packages>
 </image>
