@@ -333,6 +333,7 @@ module Bosh::Stemcell
         :system_users,
         :bosh_audit_opensuse,
         :bosh_log_audit_start,
+        :cleanup_sles_repositories
       ].flatten
     end
 
