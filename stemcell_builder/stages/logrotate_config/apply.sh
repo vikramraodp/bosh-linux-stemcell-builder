@@ -19,14 +19,8 @@ elif [ "$(get_os_type)" == "opensuse" ] || [ "$(get_os_type)" == "sles" ]; then
   cp $assets_dir/opensuse-logrotate.conf $chroot/etc/logrotate.conf
 fi
 
-if [ "$(get_os_type)" == "opensuse" ] || [ "$(get_os_type)" == "sles" ]; then
-  sed 's/OnCalendar=.*/OnCalendar=*:0\/15/; /^Accuracy.*/d' \
-    $chroot/usr/lib/systemd/system/logrotate.timer > $chroot/etc/systemd/system/logrotate.timer
-  run_in_chroot $chroot "systemctl reenable logrotate.timer"
 
-else
-  mv $chroot/etc/cron.daily/logrotate $chroot/usr/bin/logrotate-cron
-  echo '0,15,30,45 * * * * root /usr/bin/logrotate-cron' > $chroot/etc/cron.d/logrotate
-fi
+mv $chroot/etc/cron.daily/logrotate $chroot/usr/bin/logrotate-cron
+echo '0,15,30,45 * * * * root /usr/bin/logrotate-cron' > $chroot/etc/cron.d/logrotate
 
 cp -f $assets_dir/default_su_directive $chroot/etc/logrotate.d/default_su_directive
