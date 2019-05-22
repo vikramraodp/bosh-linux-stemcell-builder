@@ -21,6 +21,7 @@ fi
 
 if [ "$(get_os_type)" == "opensuse" ] || [ "$(get_os_type)" == "sles" ];  then
   cp -f $assets_dir/logrotate-cron $chroot/usr/bin/logrotate-cron
+  chmod +x $chroot/usr/bin/logrotate-cron
 else
   mv $chroot/etc/cron.daily/logrotate $chroot/usr/bin/logrotate-cron
 fi
