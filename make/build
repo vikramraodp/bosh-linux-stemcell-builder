@@ -1,0 +1,42 @@
+#!/bin/bash
+
+set -ex
+
+function permit_device_control() {
+  local devices_mount_info=$(cat /proc/self/cgroup | grep devices)
+
+  local devices_subsytems=$(echo $devices_mount_info | cut -d: -f2)
+  local devices_subdir=$(echo $devices_mount_info | cut -d: -f3)
+
+  cgroup_dir=/mnt/tmp-todo-devices-cgroup
+
+  if [ ! -e ${cgroup_dir} ]; then
+    # mount our container's devices subsystem somewhere
+    sudo mkdir ${cgroup_dir}
+  fi
+
+  if ! mountpoint -q ${cgroup_dir}; then
+    sudo mount -t cgroup -o $devices_subsytems none ${cgroup_dir}
+  fi
+
+  # permit our cgroup to do everything with all devices
+  # ignore failure in case something has already done this; echo appears to
+  # return EINVAL, possibly because devices this affects are already in use
+  sudo -c "echo a > ${cgroup_dir}${devices_subdir}/devices.allow" || true
+}
+
+permit_device_control
+
+for i in $(seq 0 64); do
+  if ! mknod -m 0660 /dev/loop$i b 7 $i; then
+    break
+  fi
+done
+
+
+VERSION="${VERSION:-opensuse,leap}"
+FILE="${FILE:-os_leap_base_image.tgz}"
+
+export SKIP_UID_CHECK=1
+mkdir -p $PWD/tmp
+bundle exec rake stemcell:build_os_image[$VERSION,$PWD/tmp/$FILE]

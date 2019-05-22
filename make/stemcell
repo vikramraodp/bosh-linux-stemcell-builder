@@ -1,0 +1,19 @@
+#!/bin/bash
+set -ex
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_DIR="$DIR/../"
+VERSION="${VERSION:-opensuse,leap}"
+OS_IMAGE="${OS_IMAGE:-os_leap_base_image.tgz}"
+
+docker build $ROOT_DIR/ci/docker/suse-os-image-stemcell-builder/ -t bosh/suse-os-image-stemcell-builder
+
+docker run --rm --privileged \
+                -e "VERSION=$VERSION" \
+                -e "FILE=$OS_IMAGE" \
+                -e LOCAL_USER_ID=$(id -u "$USER") \
+                -v $ROOT_DIR/build:/opt/bosh/tmp \
+                -v "$ROOT_DIR:/opt/bosh" \
+                --workdir /opt/bosh \
+                -t -i bosh/suse-os-image-stemcell-builder \
+                make deps build
