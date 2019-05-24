@@ -6,6 +6,13 @@ ROOT_DIR="$DIR/../"
 VERSION="${VERSION:-opensuse,leap}"
 OS_IMAGE="${OS_IMAGE:-os_leap_base_image.tgz}"
 
+if [ ! -e "$ROOT_DIR/ci/docker/suse-os-image-stemcell-builder/VMware-ovftool-4.1.0-2459827-lin.x86_64.bundle" ];
+then
+    pushd $ROOT_DIR/ci/docker/suse-os-image-stemcell-builder/
+        wget 'https://github.com/richardatlateralblast/ottar/raw/master/VMware-ovftool-4.1.0-2459827-lin.x86_64.bundle'
+    popd
+fi
+
 docker build $ROOT_DIR/ci/docker/suse-os-image-stemcell-builder/ -t bosh/suse-os-image-stemcell-builder
 
 docker run --rm --privileged \

@@ -15,4 +15,4 @@ fissile-stemcell:
 	make/fissile-stemcell
 
 .PHONY: all
-all: build fissile-stemcell
+all: stemcell fissile-stemcell
