@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # exit immediately if there is another instance running
-if checkproc /usr/sbin/logrotate; then
+if /sbin/checkproc /usr/sbin/logrotate; then
 	/bin/logger -p cron.warning -t logrotate "ALERT another instance of logrotate is running - exiting"
 	exit 1
 fi
