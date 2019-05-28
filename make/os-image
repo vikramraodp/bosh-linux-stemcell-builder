@@ -4,7 +4,7 @@ set -ex
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOT_DIR="$DIR/../"
 VERSION="${VERSION:-opensuse,leap}"
-OS_IMAGE="${OS_IMAGE:-os_leap_base_image.tgz}"
+OS_IMAGE="${OS_IMAGE:-suse_os_image.tgz}"
 
 if [ ! -e "$ROOT_DIR/ci/docker/suse-os-image-stemcell-builder/VMware-ovftool-4.1.0-2459827-lin.x86_64.bundle" ];
 then

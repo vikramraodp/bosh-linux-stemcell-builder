@@ -1,6 +1,6 @@
-.PHONY: stemcell
-stemcell:
-	make/stemcell
+.PHONY: os-image
+os-image:
+	make/os-image
 
 .PHONY: deps
 deps:
@@ -10,9 +10,13 @@ deps:
 build:
 	make/build
 
+.PHONY: clean
+clean:
+	rm -rf build/
+
 .PHONY: fissile-stemcell
 fissile-stemcell:
 	make/fissile-stemcell
 
 .PHONY: all
-all: stemcell fissile-stemcell
+all: os-image fissile-stemcell

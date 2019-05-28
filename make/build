@@ -22,13 +22,13 @@ function permit_device_control() {
   # permit our cgroup to do everything with all devices
   # ignore failure in case something has already done this; echo appears to
   # return EINVAL, possibly because devices this affects are already in use
-  sudo -c "echo a > ${cgroup_dir}${devices_subdir}/devices.allow" || true
+  sudo bash -c "echo a > ${cgroup_dir}${devices_subdir}/devices.allow" || true
 }
 
 permit_device_control
 
 for i in $(seq 0 64); do
-  if ! mknod -m 0660 /dev/loop$i b 7 $i; then
+  if ! sudo mknod -m 0660 /dev/loop$i b 7 $i; then
     break
   fi
 done
@@ -40,3 +40,4 @@ FILE="${FILE:-os_leap_base_image.tgz}"
 export SKIP_UID_CHECK=1
 mkdir -p $PWD/tmp
 bundle exec rake stemcell:build_os_image[$VERSION,$PWD/tmp/$FILE]
+sudo chown -R $LOCAL_USER_ID $PWD/tmp
