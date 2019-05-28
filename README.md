@@ -1,28 +1,59 @@
 # bosh-linux-stemcell-builder
 
-Tools for creating stemcells.
+Tools for creating openSUSE and SLES based stemcells.
+
+The stemcell is based off from a parent image, here called ``os-image`` which can be used as a source for composing images that can be run in different enviroments (openstack, GCE, etc.).
+
+First make sure you have a local copy of this repository and have Docker and git installed on the machine.
+
+## Docker development workflow
+
+For Opensuse and SLE based stemcells, you can use the make targets to build the os-image and the fissile stemcell automatically without having to setup an environment manually ( See [Setup a local build environment] below ).
+
+Requirements: Docker running on the host machine
 
 
-## Concourse workflow
+### Opensuse
 
-To create a stemcell on concourse instead of locally on virtualbox, you can execute the build-stemcell task.
-```
-mkdir /tmp/version
-cat <<EOF >/tmp/version/number
-0.0
-EOF
-cd /tmp/version
-git init
+For building the latest available openSUSE-based stemcell, you only need to type inside your check out of this repository:
 
-pushd ~/workspace/bosh-linux-stemcell-builder
-fly -t production login
-IAAS=vsphere HYPERVISOR=esxi OS_NAME=ubuntu OS_VERSION=trusty time fly -t production execute -p -x -i version=/tmp/version -i bosh-linux-stemcell-builder=. -c ./ci/tasks/build.yml -o stemcell=/tmp/vsphere/dev/
-popd
-```
+    $> make all
 
-## Setup
+You will find the os-image under the ```build/``` directory, and the stemcell image in your docker host.
 
-First make sure you have a local copy of this repository. If you already have a stemcell-building environment set up and ready, skip to the **Build Steps** section. Otherwise, follow one of these two methods before trying to run the commands in **Build Steps**.
+### SLE
+
+    $> STEMCELL_DOCKER_REPO=https://github.com/SUSE/fissile-stemcell-SLE STEMCELL_BRANCH=master VERSION=sles,12 make all
+
+### Customize the building steps
+
+There are variables that you can use to customize the building process.
+
+Os-image options:
+
+* ***VERSION***: By default it is set to ```opensuse,leap``` . It's the version that the os-image is based against. For e.g. to build a os-image for sle12, ```VERSION=sles,12```.
+* ***OS_IMAGE***: Defaults to ```suse_os_image.tgz```, it's the name of the os-image produced that you can find under ```build/```
+
+Stemcell options:
+
+* ***STEMCELL_IMAGE***: Name of the resulting stemcell image name (defaults to ```suse-os-image-stemcell```)
+* ***STEMCELL_BRANCH***: Checkout branch for the stemcell sources (Defaults to ```42.3```)
+* ***STEMCELL_DOCKER_REPO***: Repository containing the Dockerfile used to produce the stemcell (which is based off from the os-image previously built, defaults: ```https://github.com/SUSE/fissile-stemcell-openSUSE.git```)
+* ***STEMCELL_VERSION***: Tag of the resulting stemcell image name (defaults to ```STEMCELL_BRANCH```)
+
+You can also build the os-image and the stemcell separately.
+
+To build the os-image only, you can use:
+
+    $> make os-image
+
+To build the fissile stemcell:
+
+    $> make fissile-stemcell
+
+## Setup a local build environment
+
+ If you already have a stemcell-building environment set up and ready, skip to the **Build Steps** section. Otherwise, follow one of these two methods before trying to run the commands in **Build Steps**.
 
 The Docker-based environment files are located in `ci/docker/os-image-stemcell-builder`...
 
@@ -47,7 +78,7 @@ Once you have Docker running, run `./run`...
     host$ vagrant box update
 
 
-## Build Steps
+### Build Steps
 
 At this point, you should be ssh'd and running within your container in the `bosh-linux-stemcell-builder` directory. Start by installing the latest dependencies before continuing to a specific build task...
 
@@ -67,50 +98,9 @@ The OS Image should be rebuilt when you are making changes to which packages we 
 
 The arguments to `stemcell:build_os_image` are:
 
-0. *`operating_system_name`* identifies which type of OS to fetch. Determines which package repository and packaging tool will be used to download and assemble the files. Must match a value recognized by the  [OperatingSystem](bosh-stemcell/lib/bosh/stemcell/operating_system.rb) module. Currently, `ubuntu` `centos` and `rhel` are recognized.
-0. *`operating_system_version`* an identifier that the system may use to decide which release of the OS to download. Acceptable values depend on the operating system. For `ubuntu`, use `trusty`. For `centos` or `rhel`, use `7`.
-0. *`os_image_path`* the path to write the finished OS image tarball to. If a file exists at this path already, it will be overwritten without warning.
-
-
-#### Special requirements for building a RHEL OS image
-
-There are a few extra steps you need to do before building a RHEL OS image:
-
-0. Start up or re-provision the stemcell building machine (run `vagrant up` or `vagrant provision` from this directory)
-0. Download the [RHEL 7.0 Binary DVD](https://access.redhat.com/downloads/content/69/ver=/rhel---7/7.0/x86_64/product-downloads) image and use `scp` to copy it to the stemcell building machine. Note that RHEL 7.1 does not yet build correctly.
-0. On the stemcell building machine, mount the RHEL 7 DVD at `/mnt/rhel`:
-
-        $ mkdir -p /mnt/rhel
-        $ mount rhel-server-7.0-x86_64-dvd.iso /mnt/rhel
-
-0. On the stemcell building machine, put your Red Hat Account username and password into environment variables:
-
-        $ export RHN_USERNAME=my-rh-username@company.com
-        $ export RHN_PASSWORD=my-password
-
-0. On the stemcell building machine, run the stemcell building rake task:
-
-        $ bundle exec rake stemcell:build_os_image[rhel,7,$PWD/tmp/rhel_7_base_image.tgz]
-
-See below [Building the stemcell with local OS image](#with-local-os-image) on how to build stemcell with the new OS image.
-
-
-#### Special requirements for building a PhotonOS image
-
-There are a few extra steps you need to do before building a PhotonOS image:
-
-0. Start up or re-provision the stemcell building machine (run `vagrant up` or `vagrant provision` from this directory)
-0. Download the [latest PhotonOS ISO image](https://vmware.bintray.com/photon/iso/) and use `scp` to copy it to the stemcell building machine. The version must be TP2-dev or newer.
-0. On the stemcell building machine, mount the PhotonOS ISO at `/mnt/photonos`:
-
-        $ mkdir -p /mnt/photonos
-        $ mount photon.iso /mnt/photonos
-
-0. On the stemcell building machine, run the stemcell building rake task:
-
-        $ bundle exec rake stemcell:build_os_image[photonos,TP2,$PWD/tmp/photon_TP2_base_image.tgz]
-
-See below [Building the stemcell with local OS image](#with-local-os-image) on how to build stemcell with the new OS image.
+1. *`operating_system_name`* identifies which type of OS to fetch. Determines which package repository and packaging tool will be used to download and assemble the files. Must match a value recognized by the  [OperatingSystem](bosh-stemcell/lib/bosh/stemcell/operating_system.rb) module. Currently, `ubuntu` `centos` and `rhel` are recognized.
+2. *`operating_system_version`* an identifier that the system may use to decide which release of the OS to download. Acceptable values depend on the operating system. For `ubuntu`, use `trusty`. For `centos` or `rhel`, use `7`.
+3. *`os_image_path`* the path to write the finished OS image tarball to. If a file exists at this path already, it will be overwritten without warning.
 
 
 #### Special requirements for building an openSUSE image
