@@ -3,16 +3,17 @@ set -ex
 
 BASE_IMAGE=${BASE_IMAGE:-suse-os-image}
 STEMCELL_VERSION=${STEMCELL_VERSION:-develop-42.03.000000.test}
-OPENSUSE_STEMCELL_BRANCH="${OPENSUSE_STEMCELL_BRANCH:-42.3}"
+STEMCELL_BRANCH="${STEMCELL_BRANCH:-42.3}"
 OS_IMAGE="${OS_IMAGE:-os_leap_base_image.tgz}"
 STEMCELL_IMAGE="${STEMCELL_IMAGE:-$BASE_IMAGE-stemcell}"
+STEMCELL_DOCKER_REPO="${STEMCELL_DOCKER_REPO:-https://github.com/SUSE/fissile-stemcell-openSUSE.git}"
 
 docker import build/$OS_IMAGE $BASE_IMAGE
 
-[ ! -d "fissile-stemcell-openSUSE" ] && git clone https://github.com/SUSE/fissile-stemcell-openSUSE.git
+[ ! -d "docker_stemcell" ] && git clone "$STEMCELL_DOCKER_REPO" docker_stemcell
 
-pushd fissile-stemcell-openSUSE
-    git checkout $OPENSUSE_STEMCELL_BRANCH
+pushd docker_stemcell
+    git checkout $STEMCELL_BRANCH
     docker build --build-arg base_image=$BASE_IMAGE --build-arg stemcell_version=$STEMCELL_VERSION . -t $STEMCELL_IMAGE:$STEMCELL_VERSION
 popd
 
