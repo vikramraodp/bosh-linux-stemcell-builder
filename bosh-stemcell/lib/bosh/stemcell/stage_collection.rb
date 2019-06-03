@@ -307,6 +307,7 @@ module Bosh::Stemcell
         :cron_config,
         :escape_ctrl_alt_del,
         :system_users,
+        :logrotate_config,
         :bosh_audit_opensuse,
         :bosh_log_audit_start,
       ].flatten
