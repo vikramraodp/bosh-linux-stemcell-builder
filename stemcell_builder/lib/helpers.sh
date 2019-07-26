@@ -93,3 +93,7 @@ curl_five_times() {
   fi
   set -e
 }
+
+function is_os_release () {
+  awk -F= '$1=="PRETTY_NAME" { print $2 ;}' /etc/os-release | grep -iq $1
+}

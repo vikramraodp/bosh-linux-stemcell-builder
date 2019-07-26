@@ -45,7 +45,6 @@ elif [ "$(get_os_type)" == "opensuse" ]; then
 
   patch $chroot/etc/pam.d/common-account < $assets_dir/opensuse/common-account.patch
   patch $chroot/etc/pam.d/common-auth < $assets_dir/opensuse/common-auth.patch
-  patch $chroot/etc/pam.d/common-password < $assets_dir/opensuse/common-password.patch
 elif [ "$(get_os_type)" == "ubuntu" ]; then
   strip_trailing_whitespace_from $chroot/etc/pam.d/common-account
   patch $chroot/etc/pam.d/common-account < $assets_dir/ubuntu/common-account.patch
