@@ -8,8 +8,13 @@ describe 'SLES OS image', os_image: true do
   it_behaves_like 'a Linux kernel module configured OS image'
 
   context 'installed by base_sles' do
-    describe file('/etc/SuSE-release') do
-      it { should be_file }
+    describe file('/etc/os-release') do
+      it {
+        should be_file
+        should contain('NAME=SLES')
+        should contain('VERSION="15-SP1"')
+      }
+
     end
 
     describe file('/etc/locale.conf') do
