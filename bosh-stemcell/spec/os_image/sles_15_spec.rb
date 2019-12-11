@@ -3,9 +3,6 @@ require 'spec_helper'
 describe 'SLES OS image', os_image: true do
   it_behaves_like 'every OS image'
   it_behaves_like 'a SLES based OS image'
-  it_behaves_like 'a systemd-based OS image'
-  it_behaves_like 'a Linux kernel 3.x based OS image'
-  it_behaves_like 'a Linux kernel module configured OS image'
 
   context 'installed by base_sles' do
     describe file('/etc/os-release') do
