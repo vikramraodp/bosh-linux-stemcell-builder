@@ -54,16 +54,6 @@ describe 'SLES OS image', os_image: true do
     describe package('cronie') do
       it('should be installed') { should be_installed }
     end
-
-    describe file('/etc/systemd/system/default.target') do
-      it { should be_file }
-      it { should be_linked_to('/usr/lib/systemd/system/multi-user.target') }
-    end
-
-    describe file('/etc/systemd/system/multi-user.target.wants/cron.service') do
-      it { should be_file }
-      its(:content) { should match /^ExecStart=\/usr\/sbin\/cron/ }
-    end
   end
 
   context 'ensure auditd is installed (stig: V-38498) (stig: V-38495)' do
@@ -125,15 +115,6 @@ describe 'SLES OS image', os_image: true do
     describe package('ypbind') do
       it('should not be installed') { should_not be_installed }
     end
-
-    describe file('/etc/systemd/system/default.target') do
-      it { should be_file }
-      it { should be_linked_to('/usr/lib/systemd/system/multi-user.target') }
-    end
-
-    describe file('/etc/systemd/system/multi-user.target.wants/ypbind.service') do
-      it { should_not be_file }
-    end
   end
 
   describe 'logging and audit startup script' do
@@ -170,7 +151,6 @@ pesign:x:[1-9][0-9]*:[1-9][0-9]*:PE-COFF signing daemon:/var/lib/pesign:/bin/fal
 root:x:0:0:root:/root:/bin/bash
 sshd:x:[1-9][0-9]*:[1-9][0-9]*:SSH daemon:/var/lib/sshd:/bin/false
 syslog:x:[1-9][0-9]*:[1-9][0-9]*::/home/syslog:/bin/false
-systemd-timesync:x:[1-9][0-9]*:[1-9][0-9]*:systemd Time Synchronization:/:/sbin/nologin
 uucp:x:[1-9][0-9]*:[1-9][0-9]*:Unix-to-Unix CoPy system:/etc/uucp:/bin/false
 uuidd:x:[1-9][0-9]*:[1-9][0-9]*:User for uuidd:/var/run/uuidd:/bin/false
 vcap:x:[1-9][0-9]*:[1-9][0-9]*:BOSH System User:/home/vcap:/bin/bash
@@ -198,7 +178,6 @@ pesign:!:\d{5}::::::
 root:.+:\d{5}::::::
 sshd:!:\d{5}::::::
 syslog:!:\d{5}::::::
-systemd-timesync:!!:\d{5}::::::
 uucp:\*:\d{5}::::::
 uuidd:!:\d{5}::::::
 vcap:.+:\d{5}:1:99999:7:::
@@ -248,8 +227,6 @@ shadow:x:[1-9][0-9]*:
 sshd:x:[1-9][0-9]*:
 sys:x:[1-9][0-9]*:
 syslog:!:[1-9][0-9]*:
-systemd-journal:x:[1-9][0-9]*:
-systemd-timesync:x:[1-9][0-9]*:
 tape:x:[1-9][0-9]*:
 trusted:x:[1-9][0-9]*:
 tty:x:[1-9][0-9]*:
